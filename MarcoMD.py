@@ -9,9 +9,9 @@ from settings  import Settings
 settings = Settings()
 pygame.init()
 screen = pygame.display.set_mode((settings.screenw, settings.screenh))
-b = Bacterium(settings, screen)
 bacteria = Group()
-bacteria.add(b)
+for i in range(settings.n_bacteria):
+    bacteria.add(Bacterium(settings, screen, bacteria))
 
 for b in bacteria.sprites():
     b.render()
