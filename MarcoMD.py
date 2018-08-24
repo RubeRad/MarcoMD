@@ -15,11 +15,16 @@ for i in range(settings.n_bacteria):
     bacteria.add(Bacterium(settings, screen, bacteria))
 u = Unguent(settings, screen)
 
-for b in bacteria.sprites():
-    b.render()
-u.render()
+while True:
+    screen.fill(settings.bg_color)
+    for b in bacteria.sprites():
+        b.render()
+    u.update()
+    u.render()
+    if pygame.sprite.spritecollide(u, bacteria, False):
+        break
 
-pygame.display.flip()
+    pygame.display.flip()
 
 stophere=1
 

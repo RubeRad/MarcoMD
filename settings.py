@@ -4,6 +4,7 @@ import random
 
 class Settings:
     def __init__(self):
+        self.bg_color = (0,0,0) # black
         self.cols = 8  # should be even
         self.rows = 15
         self.blockrows = 8
@@ -16,7 +17,8 @@ class Settings:
         self.colors  = [(255,0,0),   # red
                         (0,0,255),   # blue
                         (255,255,0)] # yellow
-        self.unguent_blocks = 3
+        self.unguent_blocks = 2
+        self.unguent_speed = 0.1
 
     def random_color(self):
         ncolors = len(self.colors)

@@ -21,17 +21,28 @@ class Unguent(Sprite):
         for i in range(self.nblocks):
             self.colors.append(settings.random_color())
 
+        # start out moving down
+        self.moving_down = True
+        self.topx = 0.0
+
+
     def render(self):
         bb = self.settings.blockborder
         bs = self.settings.blocksize
         lx = self.rect.left + bb
-        ty = self.rect.top  + bb
+        ty = int(self.topx) + bb
         for c in self.colors:
             r = pygame.Rect(0,0, bs, bs)
             r.left = lx
             r.top  = ty
             pygame.draw.rect(self.screen, c, r)
             lx += self.settings.spacing
+
+    def update(self):
+        if self.moving_down and self.topx+self.settings.blocksize < self.screen.get_rect().bottom:
+            self.topx += self.settings.unguent_speed
+        self.rect.top = int(self.topx)
+
 
 
 
