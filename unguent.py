@@ -54,7 +54,7 @@ class Unguent(Sprite):
             pygame.draw.rect(s.sc, c, r)
             lx += s.se.spacing # scoot right for next box
 
-    def update(s):
+    def update(s, bacteria):
         # DOWNWARD movement is automatic
         # stop moving at the bottom of the screen
         if s.topy+s.se.spacing >= s.se.screenh:
@@ -63,15 +63,26 @@ class Unguent(Sprite):
         if s.moving_down:
            s.topy += s.se.unguent_speed
 
+        if s.move == '': # if no action from user
+            return       # we're done
+
         # HORIZONTAL movement is by user keypress
+        mvmtx = 0
         if s.move == s.se.key_left:
-            if s.rect.left > 0: # don't go off the screen
-               s.rect.left -= s.se.spacing
-            s.move = '' # move accomplished, turn off flag
+            mvmtx = -s.se.spacing
         elif s.move == s.se.key_rght:
-            if s.rect.right <  s.se.screenw:
-               s.rect.right += s.se.spacing
-            s.move = ''
+            mvmtx =  s.se.spacing
+        # test if we go off the screen or collide with any bacteria
+        s.rect.centerx += mvmtx
+        undo = False
+        if s.rect.left  <  0:           undo = True
+        if s.rect.right > s.se.screenw: undo = True
+        if pygame.sprite.spritecollide(s, bacteria, False):
+                                        undo = True
+        if undo:
+            s.rect.centerx -= mvmtx
+        # move is executed so erase the keypress signal
+        s.move = ''
 
 
 

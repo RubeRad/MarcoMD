@@ -21,7 +21,7 @@ while True:
     events.handle(settings, u)
     if pygame.sprite.spritecollide(u, bacteria, False):
         u.moving_down = False
-    u.update()
+    u.update(bacteria)
 
     # redraw everything
     screen.fill(settings.bg_color)
