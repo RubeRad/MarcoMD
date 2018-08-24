@@ -19,12 +19,13 @@ while True:
     screen.fill(settings.bg_color)
     for b in bacteria.sprites():
         b.render()
+    if pygame.sprite.spritecollide(u, bacteria, False):
+        u.moving_down = False
     u.update()
     u.render()
-    if pygame.sprite.spritecollide(u, bacteria, False):
-        break
-
     pygame.display.flip()
+    if not u.moving_down:
+        break
 
 stophere=1
 

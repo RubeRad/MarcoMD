@@ -13,12 +13,15 @@ class Settings:
         self.spacing = self.blocksize + self.blockborder*2
         self.screenw = self.spacing*self.cols
         self.screenh = self.spacing*self.rows
+
         self.n_bacteria = 4
         self.colors  = [(255,0,0),   # red
                         (0,0,255),   # blue
                         (255,255,0)] # yellow
+
         self.unguent_blocks = 2
         self.unguent_speed = 0.1
+        self.unguent_smooth = False
 
     def random_color(self):
         ncolors = len(self.colors)
