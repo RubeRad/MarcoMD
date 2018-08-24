@@ -16,7 +16,7 @@ class Bacterium(Sprite):
     def random_position(self, settings, others):
         half = settings.spacing//2
         while True:
-            row = random.randint(0, settings.rows-1)
+            row = random.randint(0, settings.blockrows-1)
             col = random.randint(0, settings.cols-1)
             self.rect.centerx = half + col * settings.spacing
             self.rect.centery = half + row * settings.spacing

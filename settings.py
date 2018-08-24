@@ -2,14 +2,15 @@
 
 class Settings:
     def __init__(self):
-        self.screenw = 400
-        self.screenh = 700
+        self.cols = 8
+        self.rows = 15
+        self.blockrows = 8
         self.blockw  = 16
         self.blockh  = 16
         self.spacing = 20
-        self.cols = self.screenw // self.spacing
-        self.rows = 20
-        self.n_bacteria = 10
+        self.screenw = self.spacing*self.cols
+        self.screenh = self.spacing*self.rows
+        self.n_bacteria = 4
         self.colors  = [(255,0,0),   # red
                         (0,0,255),   # blue
                         (255,255,0)] # yellow
