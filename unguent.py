@@ -59,9 +59,15 @@ class Unguent(Sprite):
         # stop moving at the bottom of the screen
         if s.topy+s.se.spacing >= s.se.screenh:
            s.moving_down = False
+           s.move = ''
         # if we are still moving, apply fractional distance
         if s.moving_down:
-           s.topy += s.se.unguent_speed
+           mvmty = s.se.unguent_speed
+           if s.move == s.se.key_down: # move further/faster
+               s.topy += mvmty * 10
+               return # don't erase s.move until KEYUP
+           # else no keypress for fast down, just regular mvmt
+           s.topy += mvmty
 
         if s.move == '': # if no action from user
             return       # we're done

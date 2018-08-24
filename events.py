@@ -14,3 +14,5 @@ def handle(se, u):
                  sys.exit()
             elif c in se.keyset:
                  u.move = c
+        elif e.type == pygame.KEYUP:
+            u.move = '' # turn off key_down

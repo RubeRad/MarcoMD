@@ -25,7 +25,8 @@ class Settings:
 
         s.key_left = 'a'
         s.key_rght = 'd'
-        s.keyset = (s.key_left, s.key_rght)
+        s.key_down = 's'
+        s.keyset = (s.key_left, s.key_rght, s.key_down)
 
     def random_color(s):
         ncolors = len(s.colors)
