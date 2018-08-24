@@ -23,6 +23,10 @@ class Settings:
         s.unguent_speed = 0.1
         s.unguent_smooth = False
 
+        s.key_left = 'a'
+        s.key_rght = 'd'
+        s.keyset = (s.key_left, s.key_rght)
+
     def random_color(s):
         ncolors = len(s.colors)
         index = random.randint(0, ncolors-1)

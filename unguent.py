@@ -32,6 +32,7 @@ class Unguent(Sprite):
         # start out moving down
         s.moving_down = True
         s.topy = 0.0
+        s.move = ''
 
 
     def render(s):
@@ -54,12 +55,24 @@ class Unguent(Sprite):
             lx += s.se.spacing # scoot right for next box
 
     def update(s):
+        # DOWNWARD movement is automatic
         # stop moving at the bottom of the screen
         if s.topy+s.se.spacing >= s.se.screenh:
            s.moving_down = False
         # if we are still moving, apply fractional distance
         if s.moving_down:
            s.topy += s.se.unguent_speed
+
+        # HORIZONTAL movement is by user keypress
+        if s.move == s.se.key_left:
+            if s.rect.left > 0: # don't go off the screen
+               s.rect.left -= s.se.spacing
+            s.move = '' # move accomplished, turn off flag
+        elif s.move == s.se.key_rght:
+            if s.rect.right <  s.se.screenw:
+               s.rect.right += s.se.spacing
+            s.move = ''
+
 
 
 
