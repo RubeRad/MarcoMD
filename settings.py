@@ -20,13 +20,16 @@ class Settings:
                         (255,255,0)] # yellow
 
         s.unguent_blocks = 2
-        s.unguent_speed = 0.05
+        s.unguent_speed = 0.01
         s.unguent_smooth = False
 
         s.key_left = 'a'
         s.key_rght = 'd'
         s.key_down = 's'
-        s.keyset = (s.key_left, s.key_rght, s.key_down)
+        s.key_cw   = 'k'
+        s.key_ccw  = 'j'
+        s.keyset = (s.key_left, s.key_rght, s.key_down,
+                    s.key_cw, s.key_ccw)
 
     def random_color(s):
         ncolors = len(s.colors)

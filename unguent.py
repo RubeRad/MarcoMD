@@ -34,11 +34,22 @@ class Unguent(Sprite):
         s.topy = 0.0
         s.move = ''
 
+        # orientation 0=l->r, 1=t->b, 2=r->l, 3=b->t
+        s.orientation = 0
+
+    def first_block_index(s):
+        if s.orientation in (0, 1):  # l->r/t->b: grab top/left block
+            row = (s.rect.top    + s.se.blockborder) // s.se.spacing
+            col = (s.rect.left   + s.se.blockborder) // s.se.spacing
+        else:  # r->l/b->t: grab bottom/right blocks
+            row = (s.rect.bottom - s.se.blocksize)   // s.se.spacing
+            col = (s.rect.right  - s.se.blocksize)   // s.se.spacing
+        return (row,col)
 
     def render(s):
         bb = s.se.blockborder
         bs = s.se.blocksize
-        lx = s.rect.left # left of whole bounding rectangle
+        sp = s.se.spacing
         if s.se.unguent_smooth:  # move every pixel
             s.rect.top = int(s.topy)
         else:  # move only in discrete jumps
@@ -47,12 +58,17 @@ class Unguent(Sprite):
             s.rect.top = rows * s.se.spacing
         ty = s.rect.top
 
+        row,col = s.first_block_index()
+        if   s.orientation == 0: dx=+1; dy= 0
+        elif s.orientation == 1: dx= 0; dy=+1
+        elif s.orientation == 2: dx=-1; dy= 0
+        elif s.orientation == 3: dx= 0; dy=-1
+
         for c in s.colors: # draw each box its own color
-            r = pygame.Rect(0,0, bs, bs)
-            r.left = lx + bb
-            r.top  = ty + bb
+            r = pygame.Rect(col*sp+bb, row*sp+bb, bs, bs)
             pygame.draw.rect(s.sc, c, r)
-            lx += s.se.spacing # scoot right for next box
+            col += dx # scoot for next block
+            row += dy
 
     def update(s, bacteria):
         # DOWNWARD movement is automatic
@@ -69,26 +85,58 @@ class Unguent(Sprite):
            # else no keypress for fast down, just regular mvmt
            s.topy += mvmty
 
-        if s.move == '': # if no action from user
-            return       # we're done
+        # ROTATION is by user keypress
+        if s.move in (s.se.key_cw, s.se.key_ccw):
+            # find the 'first' block
+            bb = s.se.blockborder
+            bs = s.se.blocksize
+            sp = s.se.spacing
+
+            row,col = s.first_block_index()
+            # now build the bounding box for the new orientation
+            s.orientation = (s.orientation + 1) % 4
+
+            if s.orientation in (0,2):
+                s.rect.width  = sp * s.nblocks
+                s.rect.height = sp + bb + 1
+            else:
+                s.rect.width  = sp
+                s.rect.height = sp * s.nblocks + bb + 1
+
+            if s.orientation in (0,1):
+                s.rect.top  = row * sp
+                s.rect.left = col * sp
+            else:
+                s.rect.bottom = sp * (row+1) + bb + 1
+                s.rect.right  = sp * (col+1)
+
+            # check if rotation goes off screen right or left
+            if s.rect.left  < 0:            s.rect.left  = 0
+            if s.rect.right > s.se.screenw: s.rect.right = s.se.screenw
+
+            # done processing CW/CCW keypress, erase it and return
+            s.move = ''
+            return
 
         # HORIZONTAL movement is by user keypress
-        mvmtx = 0
-        if s.move == s.se.key_left:
-            mvmtx = -s.se.spacing
-        elif s.move == s.se.key_rght:
-            mvmtx =  s.se.spacing
-        # test if we go off the screen or collide with any bacteria
-        s.rect.centerx += mvmtx
-        undo = False
-        if s.rect.left  <  0:           undo = True
-        if s.rect.right > s.se.screenw: undo = True
-        if pygame.sprite.spritecollide(s, bacteria, False):
-                                        undo = True
-        if undo:
-            s.rect.centerx -= mvmtx
-        # move is executed so erase the keypress signal
-        s.move = ''
+        elif s.move in (s.se.key_left, s.se.key_rght):
+            mvmtx = 0
+            if s.move == s.se.key_left:
+                mvmtx = -s.se.spacing
+            elif s.move == s.se.key_rght:
+                mvmtx =  s.se.spacing
+            # test if we go off the screen or collide with any bacteria
+            s.rect.centerx += mvmtx
+            undo = False
+            if s.rect.left  <  0:           undo = True
+            if s.rect.right > s.se.screenw: undo = True
+            if pygame.sprite.spritecollide(s, bacteria, False):
+                                            undo = True
+            if undo:
+                s.rect.centerx -= mvmtx
+            # move is executed so erase the keypress signal
+            s.move = ''
+
 
 
 

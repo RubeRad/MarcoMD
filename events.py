@@ -1,8 +1,7 @@
 #! /usr/bin/python3
 
 import pygame
-from settings import Settings
-from unguent  import Unguent
+import sys
 
 def handle(se, u):
     for e in pygame.event.get():
