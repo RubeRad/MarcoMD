@@ -6,6 +6,7 @@ import random
 class Bacterium(Sprite):
     def __init__(s, settings, screen, others):
         super().__init__()
+        s.se = settings
         s.sc = screen
         s.rect = pygame.Rect(0, 0, settings.blocksize, settings.blocksize)
         s.rect.centerx = screen.get_rect().centerx
@@ -29,3 +30,8 @@ class Bacterium(Sprite):
 
     def render(s):
         pygame.draw.rect(s.sc, s.color, s.rect)
+
+    def block_index(s):
+        row = s.rect.top  // s.se.spacing
+        col = s.rect.left // s.se.spacing
+        return (row,col)

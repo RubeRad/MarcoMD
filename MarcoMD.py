@@ -29,6 +29,9 @@ while True:
         if pygame.sprite.spritecollide(u, statics, False):
             print("Kablooey")
             break; # game over
+    inarows = events.detect_inarows(settings, statics)
+    if inarows:
+        print('Score!', len(inarows))
 
     # redraw everything
     screen.fill(settings.bg_color)
@@ -36,9 +39,6 @@ while True:
         b.render()
     u.render()
     pygame.display.flip()
-
-    if not u.moving_down:
-        break
 
 stophere=1
 

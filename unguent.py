@@ -37,14 +37,20 @@ class Unguent(Sprite):
         # orientation 0=l->r, 1=t->b, 2=r->l, 3=b->t
         s.orientation = 0
 
-    def first_block_index(s):
+    def first_block_index(s): # col,row index of only 'first' block
         if s.orientation in (0, 1):  # l->r/t->b: grab top/left block
             row = (s.rect.top    + s.se.blockborder) // s.se.spacing
             col = (s.rect.left   + s.se.blockborder) // s.se.spacing
         else:  # r->l/b->t: grab bottom/right blocks
             row = (s.rect.bottom - s.se.blocksize)   // s.se.spacing
             col = (s.rect.right  - s.se.blocksize)   // s.se.spacing
-        return (row,col)
+        return (col,row)
+
+    def orientation_dc_dr(s):
+        if s.orientation == 0: return (1,0)
+        if s.orientation == 1: return (0,1)
+        if s.orientation == 2: return (-1,0)
+        if s.orientation == 3: return (0,-1)
 
     def render(s):
         bb = s.se.blockborder
@@ -58,17 +64,14 @@ class Unguent(Sprite):
             s.rect.top = rows * s.se.spacing
         ty = s.rect.top
 
-        row,col = s.first_block_index()
-        if   s.orientation == 0: dx=+1; dy= 0
-        elif s.orientation == 1: dx= 0; dy=+1
-        elif s.orientation == 2: dx=-1; dy= 0
-        elif s.orientation == 3: dx= 0; dy=-1
+        col,row = s.first_block_index()
+        dcol,drow = s.orientation_dc_dr()
 
         for c in s.colors: # draw each box its own color
             r = pygame.Rect(col*sp+bb, row*sp+bb, bs, bs)
             pygame.draw.rect(s.sc, c, r)
-            col += dx # scoot for next block
-            row += dy
+            col += dcol # scoot for next block
+            row += drow
 
     def update(s, bacteria):
         # DOWNWARD movement is automatic
@@ -92,7 +95,7 @@ class Unguent(Sprite):
             bs = s.se.blocksize
             sp = s.se.spacing
 
-            row,col = s.first_block_index()
+            col,row = s.first_block_index()
             # now build the bounding box for the new orientation
             s.orientation = (s.orientation + 1) % 4
 

@@ -31,6 +31,8 @@ class Settings:
         s.keyset = (s.key_left, s.key_rght, s.key_down,
                     s.key_cw, s.key_ccw)
 
+        s.inarow = 4
+
     def random_color(s):
         ncolors = len(s.colors)
         index = random.randint(0, ncolors-1)

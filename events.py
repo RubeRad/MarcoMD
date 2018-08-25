@@ -2,6 +2,8 @@
 
 import pygame
 import sys
+from bacterium import Bacterium
+from unguent   import Unguent
 
 def handle(se, u):
     for e in pygame.event.get():
@@ -15,3 +17,59 @@ def handle(se, u):
                  u.move = c
         elif e.type == pygame.KEYUP:
             u.move = '' # turn off key_down
+
+
+def detect_inarows(settings, statics):
+    # populate a grid with all the colors
+    onerow = [(0,0,0)]*settings.cols
+    colors = []
+    for i in range(settings.rows):
+        colors.append(onerow.copy())
+    #colors = [[(0,0,0)] * settings.cols] * settings.rows
+    for s in statics:
+        if isinstance(s, Bacterium):
+            r,c = s.block_index()
+            colors[r][c] = s.color
+        elif isinstance(s, Unguent):
+            c,r = s.first_block_index()
+            dc,dr = s.orientation_dc_dr()
+            for i in range(s.nblocks):
+                colors[r][c] = s.colors[i]
+                c += dc
+                r += dr
+    # now look for inarows
+    inarows = []
+    for     r in range(settings.rows):
+        for c in range(settings.cols):
+            color = colors[r][c]
+            if color == (0,0,0):
+                continue
+            down_same = True # so far
+            inarow = [ (r,c) ]
+            for i in range(1,settings.inarow):
+                if r+i>=settings.rows or  colors[r+i][c] != color:
+                    down_same = False
+                    break
+                inarow.append( (r+i,c) )
+            if down_same:
+                inarows.append(inarow)
+
+            acrs_same = True
+            inarow = [ (r,c) ]
+            for i in range(1, settings.inarow):
+                if c+i>=settings.cols or colors[r][c+i] != color:
+                    acrs_same = False
+                    break
+                inarow.append( (r,c+i) )
+            if acrs_same:
+                inarows.append(inarow)
+
+    if len(inarows):
+        return inarows
+    # else
+    return None
+
+
+
+
+
