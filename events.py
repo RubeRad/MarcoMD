@@ -28,7 +28,7 @@ def detect_inarows(settings, statics):
     #colors = [[(0,0,0)] * settings.cols] * settings.rows
     for s in statics:
         if isinstance(s, Bacterium):
-            r,c = s.block_index()
+            c,r = s.block_index()
             colors[r][c] = s.color
         elif isinstance(s, Unguent):
             c,r = s.first_block_index()
@@ -70,6 +70,31 @@ def detect_inarows(settings, statics):
     return None
 
 
+def clear(settings, statics):
+    inarows = detect_inarows(settings, statics)
+    if not inarows:
+        return
 
+    allrcs = []
+    for inarow in inarows:
+        for rc in inarow:
+            allrcs.append(rc)
+
+    for s in statics.copy():
+        if isinstance(s, Bacterium):
+            c,r = s.block_index()
+            if (r,c) in allrcs:
+                statics.remove(s)
+        elif isinstance(s, Unguent):
+            c,r = s.first_block_index()
+            dc,dr = s.orientation_dc_dr()
+            erasercs = []
+            for i in range(s.nblocks):
+                if (r,c) in allrcs:
+                    erasercs.append((r,c))
+            if len(erasercs):
+                # TBD break Unguent up into smaller Unguents
+                # for now delete the whole thing
+                statics.remove(s)
 
 

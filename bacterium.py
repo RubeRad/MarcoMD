@@ -34,4 +34,4 @@ class Bacterium(Sprite):
     def block_index(s):
         row = s.rect.top  // s.se.spacing
         col = s.rect.left // s.se.spacing
-        return (row,col)
+        return (col,row)
