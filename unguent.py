@@ -4,38 +4,55 @@ import pygame
 from pygame.sprite import Sprite
 
 class Unguent(Sprite):
-    def __init__(s, settings, screen):
+    def __init__(s, settings, screen,
+                 r=-1, c=-1, # DEF: top, center
+                 clist=[],   # DEF: settings.nblocks random colors
+                 o=0):       # DEF: left-->right
+
         super().__init__()
         s.sc = screen   # short names for often-used data members
         s.se = settings
-        s.nblocks = s.se.unguent_blocks
 
-        # SIZE: make a Rect that is nblocks full spacings wide
+        if len(clist)>0: # assigned colors, known size
+            s.colors  =     clist
+            s.nblocks = len(clist)
+        else:            # default size, random colors
+            s.nblocks = s.se.unguent_blocks
+            # assign random colors per block from colors in settings
+            s.colors = []
+            for i in range(s.nblocks):
+                s.colors.append(s.se.random_color())
+
+        # RECT: make a Rect that is nblocks full spacings wide/tall
         # we will draw individual unguent blocks inside it
-        rectw = s.se.spacing*s.nblocks # one spacing per block
-        recth = s.se.spacing+s.se.blockborder+1 # extra pixel to detect adjacent collision
-        s.rect = pygame.Rect(0,0, rectw, recth)
+        s.rect = pygame.Rect(0,0, 1, 1) # set all these numbers
 
-        # POSITION: 'centered' at the top of the screen
-        if s.nblocks%2: # odd  nblocks start lesser half left of center
-           half = s.nblocks // 2
-           ctrx = s.se.scw // 2
-           s.rect.left = ctrx - half*s.se.spacing
-        else:              # even nblocks start split by screen center
-           s.rect.centerx = screen.get_rect().centerx
+        # POSITION row/column specifies index of 'first' block
+        if r<0 or c<0: # position unassigned; center at top of screen
+            r = 0
+            c = s.se.cols//2 - s.nblocks//2
 
-        # assign random colors per block from colors in settings
-        s.colors = []
-        for i in range(s.nblocks):
-            s.colors.append(s.se.random_color())
+        # orientation 0=l->r, 1=t->b, 2=r->l, 3=b->t
+        s.orientation = o
+        if s.orientation in (0,1): # l->r, t->b
+            s.rect.left   = s.se.spacing * c
+            s.rect.top    = s.se.spacing * r
+        else:
+            s.rect.right  = s.se.spacing * (c+1)
+            s.rect.bottom = s.se.spacing * (r+1) + 1
+
+        if s.orientation in (0,2): # horizontal
+            s.rect.width  = s.se.spacing * s.nblocks
+            s.rect.height = s.se.spacing + 1
+        else:                      # vertical
+            s.rect.width  = s.se.spacing
+            s.rect.height = s.se.spacing * s.nblocks + 1
 
         # start out moving down
         s.moving_down = True
-        s.topy = 0.0
+        s.topy = s.rect.top
         s.move = ''
 
-        # orientation 0=l->r, 1=t->b, 2=r->l, 3=b->t
-        s.orientation = 0
 
     def first_block_index(s): # col,row index of only 'first' block
         if s.orientation in (0, 1):  # l->r/t->b: grab top/left block
