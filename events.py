@@ -92,6 +92,8 @@ def clear(settings, statics):
             for i in range(s.nblocks):
                 if (r,c) in allrcs:
                     erasercs.append((r,c))
+                r+=dr
+                c+=dc
             if len(erasercs):
                 # TBD break Unguent up into smaller Unguents
                 # for now delete the whole thing

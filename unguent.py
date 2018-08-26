@@ -76,7 +76,7 @@ class Unguent(Sprite):
     def update(s, bacteria):
         # DOWNWARD movement is automatic
         # stop moving at the bottom of the screen
-        if s.topy+s.se.spacing >= s.se.screenh:
+        if s.rect.bottom >= s.se.screenh:
            s.moving_down = False
            s.move = ''
         # if we are still moving, apply fractional distance
