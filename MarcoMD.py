@@ -29,7 +29,23 @@ while True:
         if pygame.sprite.spritecollide(u, statics, False):
             print("Kablooey")
             break; # game over
-    events.clear(settings, statics)
+
+    # detect inarows and execute erasure
+    # movers are the broken pieces of unguents that need to fall down
+    movers = events.clear(settings, statics)
+    while len(movers):
+        # inner loop makes user wait for pieces to fall
+        for m in movers:
+            if not m.moving_down:
+                statics.add(m)
+                movers.remove(m)
+        screen.fill(settings.bg_color)
+        for b in statics.sprites():
+            b.render()
+        for m in movers:
+            m.update(statics)
+            m.render()
+        pygame.display.flip()
 
     # redraw everything
     screen.fill(settings.bg_color)

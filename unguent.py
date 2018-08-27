@@ -43,10 +43,10 @@ class Unguent(Sprite):
 
         if s.orientation in (0,2): # horizontal
             s.rect.width  = s.se.spacing * s.nblocks
-            s.rect.height = s.se.spacing + 1
+            s.rect.height = s.se.spacing + s.se.blockborder + 1
         else:                      # vertical
             s.rect.width  = s.se.spacing
-            s.rect.height = s.se.spacing * s.nblocks + 1
+            s.rect.height = s.se.spacing * s.nblocks + s.se.blockborder + 1
 
         # start out moving down
         s.moving_down = True
@@ -54,7 +54,7 @@ class Unguent(Sprite):
         s.move = ''
 
 
-    def first_block_index(s): # col,row index of only 'first' block
+    def first_block_col_row(s): # col,row index of only 'first' block
         if s.orientation in (0, 1):  # l->r/t->b: grab top/left block
             row = (s.rect.top    + s.se.blockborder) // s.se.spacing
             col = (s.rect.left   + s.se.blockborder) // s.se.spacing
@@ -63,20 +63,24 @@ class Unguent(Sprite):
             col = (s.rect.right  - s.se.blocksize)   // s.se.spacing
         return (col,row)
 
-    def last_block_index(s):
-        if s.orientation in (0, 1):  # l->r/b->t: grab bot/right block
-            row = (s.rect.bottom - s.se.blocksize) // s.se.spacing
-            col = (s.rect.right  - s.se.blocksize) // s.se.spacing
-        else:  # r->l/b->t: grab top/left blocks
-            row = (s.rect.top    + s.se.blockborder) // s.se.spacing
-            col = (s.rect.left   + s.se.blockborder) // s.se.spacing
-        return (col,row)
+    def orientation_dc_dr(s):
+        if s.orientation == 0: return (1, 0)
+        if s.orientation == 1: return (0, 1)
+        if s.orientation == 2: return (-1, 0)
+        if s.orientation == 3: return (0, -1)
+
+    def block_col_row(s, i):
+        c0,r0 = s.first_block_col_row()
+        dc,dr = s.orientation_dc_dr()
+        return (c0+i*dc, r0+i*dr)
 
     # if this unguent doesn't include r,c, return -1
     # if it does, return 0 for 'first' block, etc.
     def index_of(s, r, c):
-        c0,r0 = s.first_block_index()
-        cN,rN =  s.last_block_index()
+        c0,r0 = s.first_block_col_row()
+        dc,dr = s.orientation_dc_dr()
+        cN = c0 + dc*(s.nblocks-1)
+        rN = r0 + dr*(s.nblocks-1)
         if s.orientation==0 and r==r0 and r==rN and c0<=c and c<=cN:
             return c-c0
         if s.orientation==1 and c==c0 and c==cN and r0<=r and r<=rN:
@@ -90,12 +94,6 @@ class Unguent(Sprite):
 
 
 
-    def orientation_dc_dr(s):
-        if s.orientation == 0: return (1,0)
-        if s.orientation == 1: return (0,1)
-        if s.orientation == 2: return (-1,0)
-        if s.orientation == 3: return (0,-1)
-
     def render(s):
         bb = s.se.blockborder
         bs = s.se.blocksize
@@ -108,7 +106,7 @@ class Unguent(Sprite):
             s.rect.top = rows * s.se.spacing
         ty = s.rect.top
 
-        col,row = s.first_block_index()
+        col,row = s.first_block_col_row()
         dcol,drow = s.orientation_dc_dr()
 
         for c in s.colors: # draw each box its own color
@@ -139,7 +137,7 @@ class Unguent(Sprite):
             bs = s.se.blocksize
             sp = s.se.spacing
 
-            col,row = s.first_block_index()
+            col,row = s.first_block_col_row()
             # now build the bounding box for the new orientation
             s.orientation = (s.orientation + 1) % 4
 
@@ -184,7 +182,41 @@ class Unguent(Sprite):
             # move is executed so erase the keypress signal
             s.move = ''
 
+    # rcs are (row,col) tuples of blocks currently being erased
+    # split this unguent apart at erased blocks and return new
+    # unguents for the segments that are not erased
+    # if none of these blocks are erased, do nothing and return []
+    def denature(s, rcs):
+        indices = []
+        for r,c in rcs:
+            i = s.index_of(r,c)
+            if i!=-1:
+                indices.append(i)
+        if len(indices) == 0:
+            return []
 
+        indices.sort()
+        i = indices.pop() # the last index
+        # make an Unguent before i and recursively denature it
+        bef_len = i-0
+        if bef_len == 0:
+            bef = None
+            returns = []
+        else:
+            col,row = s.first_block_col_row()
+            bef = Unguent(s.se, s.sc, r=row, c=col, clist=s.colors[0:i])
+            returns = bef.denature(rcs)
+            if len(returns)==0: # bef did not denature any further
+                returns = [bef]
+
+        # now add whatever is after i
+        aft_len = s.nblocks-(i+1)
+        if aft_len != 0:
+            col,row = s.block_col_row(i+1)
+            aft = Unguent(s.se, s.sc, r=row, c=col, clist=s.colors[i+1:])
+            returns.append(aft)
+
+        return returns
 
 
 
