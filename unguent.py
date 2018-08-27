@@ -2,6 +2,7 @@
 
 import pygame
 from pygame.sprite import Sprite
+from settings import Settings
 
 class Unguent(Sprite):
     def __init__(s, settings, screen,
@@ -185,40 +186,76 @@ class Unguent(Sprite):
     # rcs are (row,col) tuples of blocks currently being erased
     # split this unguent apart at erased blocks and return new
     # unguents for the segments that are not erased
-    # if none of these blocks are erased, do nothing and return []
+    # if none of these blocks are erased, do nothing and return None
+    # if entire Unguent is erased return empty list []
     def denature(s, rcs):
         indices = []
         for r,c in rcs:
             i = s.index_of(r,c)
             if i!=-1:
                 indices.append(i)
-        if len(indices) == 0:
-            return []
+        if len(indices) == 0: # no blocks erased
+            return None       # return None
+        # Otherwise some blocks are erased. What's left?
 
         indices.sort()
         i = indices.pop() # the last index
+
+        # what is after that last index?
+        aft_len = s.nblocks-(i+1)
+        if aft_len == 0:
+            aft = None
+        else:
+            col,row = s.block_col_row(i+1)
+            aft = Unguent(s.se, s.sc, r=row, c=col, clist=s.colors[i+1:])
+
         # make an Unguent before i and recursively denature it
         bef_len = i-0
         if bef_len == 0:
-            bef = None
-            returns = []
+            befs = None
         else:
             col,row = s.first_block_col_row()
             bef = Unguent(s.se, s.sc, r=row, c=col, clist=s.colors[0:i])
-            returns = bef.denature(rcs)
-            if len(returns)==0: # bef did not denature any further
-                returns = [bef]
+            befs = bef.denature(rcs)
+            if befs==None: # bef not hit by rcs, it is a whole piece
+                befs = [bef]
 
-        # now add whatever is after i
-        aft_len = s.nblocks-(i+1)
-        if aft_len != 0:
-            col,row = s.block_col_row(i+1)
-            aft = Unguent(s.se, s.sc, r=row, c=col, clist=s.colors[i+1:])
-            returns.append(aft)
-
+        returns = []
+        if befs: returns.extend(befs)
+        if aft:  returns.append(aft)
         return returns
 
 
+#######################
+##### UNIT TESTS ######
+#######################
+if __name__ == '__main__':
+    se = Settings()
+    # this guy is r,c 5,6 and 5,7
+    u = Unguent(se, None, r=5, c=6, o=0, clist=[1,2])
 
+    # test erasing both
+    ms = u.denature([(5,6), (5,7), (5,8)]) # 5,8 just for funsies
+    assert len(ms)==0, 'should return 0 movers'
+
+    # test erasing 5,6
+    ms = u.denature([(5,6)])
+    assert len(ms)==1, 'should return 1 mover'
+    m = ms.pop()
+    assert m.nblocks==1, 'should be nblocks==1'
+    assert len(m.colors)==1 and m.colors[0]==2, 'should be color 2'
+    c,r = m.first_block_col_row()
+    assert r==5 and c==7, 'should return r,c 5,7'
+
+    # test erasing 5,7
+    ms = u.denature([(5,7)])
+    assert len(ms)==1, 'should return 1 mover'
+    m = ms.pop()
+    assert m.nblocks==1, 'should be nblocks==1'
+    assert len(m.colors)==1 and m.colors[0]==1, 'should be color 2'
+    c,r = m.first_block_col_row()
+    assert r==5 and c==6, 'should return r,c 5,6'
+
+    print("All tests passed")
 
 

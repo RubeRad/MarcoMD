@@ -96,7 +96,9 @@ def clear(settings, statics):
                     eraseindices.append(i)
             if len(eraseindices):
                 # break Unguent up into smaller Unguents
-                movers.extend( s.denature(allrcs) )
+                pieces = s.denature(allrcs)
+                if pieces:
+                    movers.extend(pieces)
                 statics.remove(s)
     return movers
 
