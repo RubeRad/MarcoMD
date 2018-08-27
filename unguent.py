@@ -63,6 +63,33 @@ class Unguent(Sprite):
             col = (s.rect.right  - s.se.blocksize)   // s.se.spacing
         return (col,row)
 
+    def last_block_index(s):
+        if s.orientation in (0, 1):  # l->r/b->t: grab bot/right block
+            row = (s.rect.bottom - s.se.blocksize) // s.se.spacing
+            col = (s.rect.right  - s.se.blocksize) // s.se.spacing
+        else:  # r->l/b->t: grab top/left blocks
+            row = (s.rect.top    + s.se.blockborder) // s.se.spacing
+            col = (s.rect.left   + s.se.blockborder) // s.se.spacing
+        return (col,row)
+
+    # if this unguent doesn't include r,c, return -1
+    # if it does, return 0 for 'first' block, etc.
+    def index_of(s, r, c):
+        c0,r0 = s.first_block_index()
+        cN,rN =  s.last_block_index()
+        if s.orientation==0 and r==r0 and r==rN and c0<=c and c<=cN:
+            return c-c0
+        if s.orientation==1 and c==c0 and c==cN and r0<=r and r<=rN:
+            return r-r0
+        if s.orientation==2 and r==r0 and r==rN and cN<=c and c<=c0:
+            return c0-c
+        if s.orientation==3 and c==c0 and c==cN and rN<=r and r<=r0:
+            return r0-r
+        # else
+        return -1
+
+
+
     def orientation_dc_dr(s):
         if s.orientation == 0: return (1,0)
         if s.orientation == 1: return (0,1)

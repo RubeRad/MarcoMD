@@ -88,13 +88,12 @@ def clear(settings, statics):
         elif isinstance(s, Unguent):
             c,r = s.first_block_index()
             dc,dr = s.orientation_dc_dr()
-            erasercs = []
-            for i in range(s.nblocks):
-                if (r,c) in allrcs:
-                    erasercs.append((r,c))
-                r+=dr
-                c+=dc
-            if len(erasercs):
+            eraseindices = []
+            for eraser,erasec in allrcs:
+                i = s.index_of(eraser,erasec)
+                if i!=-1:
+                    eraseindices.append(i)
+            if len(eraseindices):
                 # TBD break Unguent up into smaller Unguents
                 # for now delete the whole thing
                 statics.remove(s)
