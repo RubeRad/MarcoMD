@@ -20,7 +20,7 @@ class Settings:
                         (255,255,0)] # yellow
 
         s.unguent_blocks = 2
-        s.unguent_speed = 0.05
+        s.unguent_speed = 0.1
         s.unguent_smooth = False
 
         s.key_left = 'a'

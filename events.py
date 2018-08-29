@@ -103,4 +103,8 @@ def clear(settings, statics):
     return movers
 
 
-
+def has_bacteria(statics):
+    for s in statics:
+        if isinstance(s, Bacterium):
+            return True
+    return False

@@ -29,7 +29,7 @@ class Bacterium(Sprite):
             break
 
     def render(s):
-        pygame.draw.rect(s.sc, s.color, s.rect)
+        pygame.draw.circle(s.sc, s.color, s.rect.center, s.se.blocksize//2)
 
     def block_index(s):
         row = s.rect.top  // s.se.spacing

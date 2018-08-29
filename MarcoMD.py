@@ -16,7 +16,7 @@ for i in range(settings.n_bacteria):
     statics.add(Bacterium(settings, screen, statics))
 u = Unguent(settings, screen)
 
-while True:
+while events.has_bacteria(statics):
     # take care of bidnis
     events.handle(settings, u)
     if pygame.sprite.spritecollide(u, statics, False):
