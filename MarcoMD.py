@@ -35,7 +35,7 @@ while True:
     movers = events.clear(settings, statics)
     while len(movers):
         # inner loop makes user wait for pieces to fall
-        for m in movers:
+        for m in movers.copy():
             if not m.moving_down:
                 statics.add(m)
                 movers.remove(m)
