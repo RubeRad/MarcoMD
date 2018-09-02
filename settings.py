@@ -1,6 +1,7 @@
 #! /usr/bin/python3
 
 import random
+import argparse
 
 class Settings:
     def __init__(s):
@@ -20,7 +21,7 @@ class Settings:
                         (255,255,0)] # yellow
 
         s.unguent_blocks = 2
-        s.unguent_speed = 0.1
+        s.unguent_speed = 0.02
         s.unguent_smooth = False
 
         s.key_left = 'a'
@@ -28,10 +29,19 @@ class Settings:
         s.key_down = 's'
         s.key_cw   = 'k'
         s.key_ccw  = 'j'
+        s.key_pause = 'p'
         s.keyset = (s.key_left, s.key_rght, s.key_down,
-                    s.key_cw, s.key_ccw)
+                    s.key_cw, s.key_ccw, s.key_pause)
+        s.paused = False
 
         s.inarow = 4
+
+        parser = argparse.ArgumentParser("Marco M.D.")
+        parser.add_argument('--seed', type=int, default=-1,
+                            help='Seed to control random number generation')
+        args = parser.parse_args()
+        if args.seed > 0:
+            random.seed(args.seed)
 
     def random_color(s):
         ncolors = len(s.colors)
