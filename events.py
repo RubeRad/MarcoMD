@@ -13,6 +13,8 @@ def handle(se, u):
             c=chr(e.key) # convert number to character
             if   c == 'q':
                  sys.exit()
+            elif c == se.key_pause:
+                 se.paused = not se.paused
             elif c in se.keyset:
                  u.move = c
         elif e.type == pygame.KEYUP:

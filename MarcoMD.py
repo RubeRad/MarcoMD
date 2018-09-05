@@ -8,6 +8,7 @@ from settings  import Settings
 import events
 
 
+
 settings = Settings()
 pygame.init()
 screen = pygame.display.set_mode((settings.screenw, settings.screenh))
@@ -19,6 +20,9 @@ u = Unguent(settings, screen)
 while events.has_bacteria(statics):
     # take care of bidnis
     events.handle(settings, u)
+    if settings.paused:
+        continue
+
     if pygame.sprite.spritecollide(u, statics, False):
         u.moving_down = False
     u.update(statics)
