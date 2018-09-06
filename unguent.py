@@ -101,7 +101,25 @@ class Unguent(Sprite):
         # else
         return -1
 
+    def bottom_cols_rows(s):
+        dc,dr = s.orientation_dc_dr()
+        crs = []
+        if s.orientation in (0,2):
+            for i in range(s.nblocks):
+                crs.append( (s.c0+i*dc, s.r0) )
+        elif s.orientation == 3: # c0,r0 is bottom
+            crs.append( (s.c0, s.r0) )
+        else: # orientation 1, c0, r0 is top
+            crs.append( (s.c0, s.r0 - s.nblocks + 1) )
 
+    def free_to_move(s, statics):
+        s.set_rect(s.c0, s.r0+1, s.orientation)
+        if s.rect.bottom > s.se.screenh or pygame.sprite.spritecollideany(s, statics, False):
+            s.set_rect(s.c0, s.r0-1, s.orientation)
+            s.moving_down = False
+        else:
+            s.moving_down = True
+        return s.moving_down
 
     def render(s):
         bb = s.se.blockborder
@@ -123,6 +141,8 @@ class Unguent(Sprite):
         # ROTATION is by user keypress
         if s.move in (s.se.key_cw, s.se.key_ccw):
             osav = s.orientation
+            csav = s.c0
+            rsav = s.r0
             if s.move == s.se.key_cw: dori=+1
             else:                     dori=-1
             onew = (s.orientation+dori)%4
@@ -130,12 +150,15 @@ class Unguent(Sprite):
 
             # if new orientation collides, undo it
             if pygame.sprite.spritecollideany(s, bacteria, False):
-                s.set_rect(s.c0, s.r0, osav)
+                s.set_rect(csav, rsav, osav)
             else: # check if rotation goes off screen right or left, bump it
                 if s.rect.left  < 0:
                     s.set_rect(s.c0+1, s.r0, s.orientation)
                 if s.rect.right > s.se.screenw:
                     s.set_rect(s.c0-1, s.r0, s.orientation)
+            # check again (the bump might have caused a collision)
+            if pygame.sprite.spritecollideany(s, bacteria, False):
+                s.set_rect(csave, rsav, osav)
 
             s.move = ''# done processing CW/CCW keypress, erase it
 
