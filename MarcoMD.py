@@ -37,6 +37,7 @@ while events.has_bacteria(statics):
     # detect inarows and execute erasure
     # movers are the broken pieces of unguents that need to fall down
     movers = events.clear(settings, statics)
+    settings.unguent_speed *= 10
     while len(movers):
         # inner loop makes user wait for pieces to fall
         for m in movers.copy():
@@ -50,6 +51,7 @@ while events.has_bacteria(statics):
             m.update(statics)
             m.render()
         pygame.display.flip()
+    settings.unguent_speed /= 10
 
     # redraw everything
     screen.fill(settings.bg_color)
