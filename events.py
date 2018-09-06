@@ -102,6 +102,21 @@ def clear(settings, statics):
                 if pieces:
                     movers.extend(pieces)
                 statics.remove(s)
+
+
+    # static Unguents might have broken free, look for them
+    found_sumpn = True # just to get the loop started
+    while (found_sumpn):
+        found_sumpn = False
+        for s in statics.copy():
+            statics.remove(s)
+            if isinstance(s,Unguent) and s.free_to_move(statics):
+                found_sump = True
+                movers.append(s)
+                break
+            else: # put it back
+                statics.add(s)
+
     return movers
 
 
