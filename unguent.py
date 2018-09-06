@@ -229,33 +229,36 @@ class Unguent(Sprite):
 #######################
 ##### UNIT TESTS ######
 #######################
+import unittest
 if __name__ == '__main__':
-    se = Settings()
-    # this guy is r,c 5,6 and 5,7
-    u = Unguent(se, None, r=5, c=6, o=0, clist=[1,2])
+    class UnguentTester(unittest.TestCase):
+        def testDenaturing(s):
+            se = Settings()
+            # this guy is r,c 5,6 and 5,7
+            u = Unguent(se, None, r=5, c=6, o=0, clist=[1,2])
 
-    # test erasing both
-    ms = u.denature([(5,6), (5,7), (5,8)]) # 5,8 just for funsies
-    assert len(ms)==0, 'should return 0 movers'
+            # test erasing both
+            ms = u.denature([(5,6), (5,7), (5,8)]) # 5,8 just for funsies
+            s.assertEqual(len(ms), 0, 'should return 0 movers')
 
-    # test erasing 5,6
-    ms = u.denature([(5,6)])
-    assert len(ms)==1, 'should return 1 mover'
-    m = ms.pop()
-    assert m.nblocks==1, 'should be nblocks==1'
-    assert len(m.colors)==1 and m.colors[0]==2, 'should be color 2'
-    c,r = m.first_block_col_row()
-    assert r==5 and c==7, 'should return r,c 5,7'
+            # test erasing 5,6
+            ms = u.denature([(5,6)])
+            s.assertEqual(len(ms), 1, 'should return 1 mover')
+            m = ms.pop()
+            s.assertEqual(m.nblocks, 1, 'should be nblocks==1')
+            s.assertTrue(len(m.colors)==1 and m.colors[0]==2, 'should be color 2')
+            c,r = m.first_block_col_row()
+            s.assertTrue(r==5 and c==7, 'should return r,c 5,7')
 
-    # test erasing 5,7
-    ms = u.denature([(5,7)])
-    assert len(ms)==1, 'should return 1 mover'
-    m = ms.pop()
-    assert m.nblocks==1, 'should be nblocks==1'
-    assert len(m.colors)==1 and m.colors[0]==1, 'should be color 2'
-    c,r = m.first_block_col_row()
-    assert r==5 and c==6, 'should return r,c 5,6'
+            # test erasing 5,7
+            ms = u.denature([(5,7)])
+            s.assertEqual(len(ms), 1, 'should return 1 mover')
+            m = ms.pop()
+            s.assertEqual(m.nblocks, 1, 'should be nblocks==1')
+            s.assertTrue(len(m.colors)==1 and m.colors[0]==1, 'should be color 2')
+            c,r = m.first_block_col_row()
+            s.assertTrue(r==5 and c==6, 'should return r,c 5,6')
 
-    print("All tests passed")
+    unittest.main()
 
 
