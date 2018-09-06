@@ -47,10 +47,10 @@ class Unguent(Sprite):
         # first set the size
         if s.orientation in (0,2): # horizontal
             s.rect.width  = s.se.spacing * s.nblocks
-            s.rect.height = s.se.spacing + s.se.blockborder + 1
+            s.rect.height = s.se.spacing
         else:                      # vertical
             s.rect.width  = s.se.spacing
-            s.rect.height = s.se.spacing * s.nblocks + s.se.blockborder + 1
+            s.rect.height = s.se.spacing * s.nblocks
 
         # then place that size by setting position
         if s.orientation in (0,1): # l->r, t->b
@@ -58,7 +58,7 @@ class Unguent(Sprite):
             s.rect.top    = s.se.spacing * r
         else:
             s.rect.right  = s.se.spacing * (c+1)
-            s.rect.bottom = s.se.spacing * (r+1) + s.se.blockborder + 1
+            s.rect.bottom = s.se.spacing * (r+1)
 
     def first_block_col_row(s): # col,row index of only 'first' block
         #if s.orientation in (0, 1):  # l->r/t->b: grab top/left block
@@ -107,11 +107,6 @@ class Unguent(Sprite):
         bb = s.se.blockborder
         bs = s.se.blocksize
         sp = s.se.spacing
-        # move only in discrete jumps
-        # use truncating integer division
-        row = int(s.topy)//s.se.spacing
-        s.set_rect(s.c0, row, s.orientation)
-
         col,row = s.first_block_col_row()
         dcol,drow = s.orientation_dc_dr()
 
@@ -122,21 +117,8 @@ class Unguent(Sprite):
             row += drow
 
     def update(s, bacteria):
-        # DOWNWARD movement is automatic
-        # stop moving at the bottom of the screen, or hit a static
-        if s.rect.bottom >= s.se.screenh or pygame.sprite.spritecollide(s, bacteria, False):
-           s.moving_down = False
-           s.move = ''
-
-        # if we are still moving, apply fractional distance
-        if s.moving_down:
-           mvmty = s.se.unguent_speed
-           if s.move == s.se.key_down: # move further/faster
-               s.topy += mvmty * 10
-               return # don't erase s.move until KEYUP
-           # else no keypress for fast down, just regular mvmt
-           s.topy += mvmty
-
+        if not s.moving_down: # shouldn't happen much
+            return
 
         # ROTATION is by user keypress
         if s.move in (s.se.key_cw, s.se.key_ccw):
@@ -155,9 +137,7 @@ class Unguent(Sprite):
                 if s.rect.right > s.se.screenw:
                     s.set_rect(s.c0-1, s.r0, s.orientation)
 
-            # done processing CW/CCW keypress, erase it and return
-            s.move = ''
-            return
+            s.move = ''# done processing CW/CCW keypress, erase it
 
         # HORIZONTAL movement is by user keypress
         elif s.move in (s.se.key_left, s.se.key_rght):
@@ -174,6 +154,25 @@ class Unguent(Sprite):
                 s.set_rect(csav, s.r0, s.orientation)
             # move is executed so erase the keypress signal
             s.move = ''
+
+        # DOWNWARD movement is automatic
+        # if we are still moving, apply fractional distance
+        mvmty = s.se.unguent_speed
+        if s.move == s.se.key_down: # move further/faster
+           s.topy += mvmty * 10
+           # don't erase s.move until KEYUP
+        else: # no keypress for fast down, just regular mvmt
+           s.topy += mvmty
+        row = int(s.topy // s.se.spacing)
+        s.set_rect(s.c0, row, s.orientation)
+
+        # stop moving at the bottom of the screen, or hitting a static
+        if s.rect.bottom > s.se.screenh or pygame.sprite.spritecollide(s, bacteria, False):
+           # too far!
+           s.set_rect(s.c0, s.r0-1, s.orientation)
+           s.moving_down = False
+           s.move = ''
+
 
     # rcs are (row,col) tuples of blocks currently being erased
     # split this unguent apart at erased blocks and return new

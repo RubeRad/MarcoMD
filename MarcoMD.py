@@ -23,8 +23,6 @@ while events.has_bacteria(statics):
     if settings.paused:
         continue
 
-    if pygame.sprite.spritecollide(u, statics, False):
-        u.moving_down = False
     u.update(statics)
     if not u.moving_down: # done moving! time for a new one
         statics.add(u)
