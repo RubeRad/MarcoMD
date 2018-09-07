@@ -40,7 +40,8 @@ class Unguent(Sprite):
         #s.topy = s.rect.top
         s.move = ''
         s.key_just_pressed = False
-        s.time = time.perf_counter()
+        s.time_move = time.perf_counter()
+        s.time_fall = s.time_move
 
     def set_rect(s, c, r, o):
         s.c0 = c
@@ -141,11 +142,25 @@ class Unguent(Sprite):
         if not s.moving_down: # shouldn't happen much
             return
 
+        curt = time.perf_counter()
+        dt_move = curt - s.time_move
+        dt_fall = curt - s.time_fall
+        if not s.move and dt_fall < s.se.s_fall:
+            # no user key, not time for automatic drop yet
+            return
+        if s.move and not s.key_just_pressed and dt_move < s.se.s_move:
+            # key held down, not time to move again yet
+            return
+
+        # so either we need to act on user keypress, or do an
+        # automatic drop i.e. a movement is definitely happening
+
         # ROTATION is by user keypress
         if s.move in (s.se.key_cw, s.se.key_ccw):
-            osav = s.orientation
-            csav = s.c0
-            rsav = s.r0
+            # save time of rotation for proper delay to next one
+            s.time_move = curt
+            # save current state in case rotation collides
+            csav,rsav,osav = s.c0, s.r0, s.orientation
             if s.move == s.se.key_cw: dori=+1
             else:                     dori=-1
             onew = (s.orientation+dori)%4
@@ -154,6 +169,7 @@ class Unguent(Sprite):
             # if new orientation collides, undo it
             if pygame.sprite.spritecollideany(s, bacteria, False):
                 s.set_rect(csav, rsav, osav)
+                s.move = ''
             else: # check if rotation goes off screen right or left, bump it
                 if s.rect.left  < 0:
                     s.set_rect(s.c0+1, s.r0, s.orientation)
@@ -162,13 +178,13 @@ class Unguent(Sprite):
             # check again (the bump might have caused a collision)
             if pygame.sprite.spritecollideany(s, bacteria, False):
                 s.set_rect(csave, rsav, osav)
-
-            s.move = ''# done processing CW/CCW keypress, erase it
+                s.move = ''
 
         # HORIZONTAL movement is by user keypress
         elif s.move in (s.se.key_left, s.se.key_rght):
-            csav = s.c0
-            if s.move == s.se.key_left:   s.set_rect(s.c0-1, s.r0, s.orientation)
+            s.time_move = curt # for proper delay to next move
+            csav = s.c0        # to restore in case of collision
+            if   s.move == s.se.key_left: s.set_rect(s.c0-1, s.r0, s.orientation)
             elif s.move == s.se.key_rght: s.set_rect(s.c0+1, s.r0, s.orientation)
             # test if we go off the screen or collide with any bacteria
             undo = False
@@ -178,26 +194,26 @@ class Unguent(Sprite):
                                             undo = True
             if undo:
                 s.set_rect(csav, s.r0, s.orientation)
-            # move is executed so erase the keypress signal
-            s.move = ''
+                s.move = ''
 
-        # DOWNWARD movement is automatic
-        curt = time.perf_counter()
-        dt   = curt -s.time
+        # DOWNWARD movement is automatic (or keypress-accelerated)
+        # Even if we did keypress movements above, it might be
+        # time for a one-row drop as well
         like_its_hot=False
-        if dt > s.se.s_fall:
+        if dt_fall > s.se.s_fall:
             like_its_hot = True
         if s.move == s.se.key_down:
-            if dt > s.se.s_move or s.key_just_pressed:
+            if dt_move > s.se.s_move or s.key_just_pressed:
                 like_its_hot = True
+                s.time_move = curt
         if like_its_hot: # drop it
-            s.set_rect(s.c0, s.r0+1, s.orientation)
-            s.time = curt
+            s.set_rect(s.c0, s.r0+1, s.orientation) # try it
+            s.time_fall = curt
 
         # stop moving at the bottom of the screen, or hitting a static
         if s.rect.bottom > s.se.screenh or pygame.sprite.spritecollide(s, bacteria, False):
            # too far!
-           s.set_rect(s.c0, s.r0-1, s.orientation)
+           s.set_rect(s.c0, s.r0-1, s.orientation) # undo it
            s.moving_down = False
            s.move = ''
 
