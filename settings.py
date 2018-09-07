@@ -36,7 +36,7 @@ class Settings:
         parser = argparse.ArgumentParser("Marco M.D.")
         parser.add_argument('--seed', type=int, default=-1,
                             help='Seed to control random number generation')
-        parser.add_argument('--dims', type=str, default="",
+        parser.add_argument('--dims', type=str, default="8x15x4x8",
                             help='COLS[xROWS[xBLOCKS[xBLOCKROWS]]]')
         # this will go away after implementing Issue#3 (multiple unguent sizes)
         # or maybe stick around and only be able to specify a single 100% size
