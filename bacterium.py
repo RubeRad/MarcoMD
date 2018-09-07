@@ -17,11 +17,10 @@ class Bacterium(Sprite):
     def random_position(s, settings, others):
         half = settings.spacing//2
         while True:
-            row = random.randint(0, settings.blockrows-1)
+            row = random.randint(settings.rows-settings.blockrows, settings.rows-1)
             col = random.randint(0, settings.cols-1)
             s.rect.centerx = half + col * settings.spacing
             s.rect.centery = half + row * settings.spacing
-            s.rect.centery = settings.screenh - s.rect.centery
             if pygame.sprite.spritecollide(s, others, False):
                 print("Bang!")
                 continue # collision! go try again
