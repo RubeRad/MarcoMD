@@ -243,7 +243,7 @@ class Unguent(Sprite):
             aft = None
         else:
             col,row = s.block_col_row(i+1)
-            aft = Unguent(s.se, s.sc, r=row, c=col, clist=s.colors[i+1:])
+            aft = Unguent(s.se, s.sc, r=row, c=col, o=s.orientation, clist=s.colors[i+1:])
 
         # make an Unguent before i and recursively denature it
         bef_len = i-0
@@ -251,7 +251,7 @@ class Unguent(Sprite):
             befs = None
         else:
             col,row = s.first_block_col_row()
-            bef = Unguent(s.se, s.sc, r=row, c=col, clist=s.colors[0:i])
+            bef = Unguent(s.se, s.sc, r=row, c=col, o=s.orientation, clist=s.colors[0:i])
             befs = bef.denature(rcs)
             if befs==None: # bef not hit by rcs, it is a whole piece
                 befs = [bef]
@@ -294,6 +294,11 @@ if __name__ == '__main__':
             s.assertTrue(len(m.colors)==1 and m.colors[0]==1, 'should be color 2')
             c,r = m.first_block_col_row()
             s.assertTrue(r==5 and c==6, 'should return r,c 5,6')
+
+            # Issue #17 vertical 3-block erases wrong
+            u = Unguent(se, None, c=4, r=0, o=1, clist=[0,0,0])
+            should_be_empty = u.denature([(0,4), (1,4), (2,4)])
+            s.assertEqual(0, len(should_be_empty), 'fully-erased 3-block should denature to nothing')
 
     unittest.main()
 
