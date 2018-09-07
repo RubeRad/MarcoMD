@@ -1,5 +1,6 @@
 #! /usr/bin/python3
 
+import time
 import pygame
 from pygame.sprite import Sprite
 from settings import Settings
@@ -36,8 +37,10 @@ class Unguent(Sprite):
 
         # start out moving down
         s.moving_down = True
-        s.topy = s.rect.top
+        #s.topy = s.rect.top
         s.move = ''
+        s.key_just_pressed = False
+        s.time = time.perf_counter()
 
     def set_rect(s, c, r, o):
         s.c0 = c
@@ -179,15 +182,17 @@ class Unguent(Sprite):
             s.move = ''
 
         # DOWNWARD movement is automatic
-        # if we are still moving, apply fractional distance
-        mvmty = s.se.unguent_speed
-        if s.move == s.se.key_down: # move further/faster
-           s.topy += mvmty * 10
-           # don't erase s.move until KEYUP
-        else: # no keypress for fast down, just regular mvmt
-           s.topy += mvmty
-        row = int(s.topy // s.se.spacing)
-        s.set_rect(s.c0, row, s.orientation)
+        curt = time.perf_counter()
+        dt   = curt -s.time
+        like_its_hot=False
+        if dt > s.se.s_fall:
+            like_its_hot = True
+        if s.move == s.se.key_down:
+            if dt > s.se.s_move or s.key_just_pressed:
+                like_its_hot = True
+        if like_its_hot: # drop it
+            s.set_rect(s.c0, s.r0+1, s.orientation)
+            s.time = curt
 
         # stop moving at the bottom of the screen, or hitting a static
         if s.rect.bottom > s.se.screenh or pygame.sprite.spritecollide(s, bacteria, False):
@@ -196,6 +201,7 @@ class Unguent(Sprite):
            s.moving_down = False
            s.move = ''
 
+        s.key_just_pressed = False # not any more
 
     # rcs are (row,col) tuples of blocks currently being erased
     # split this unguent apart at erased blocks and return new

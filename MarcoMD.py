@@ -1,5 +1,6 @@
 #! /usr/bin/python3
 
+import time
 import pygame
 from   pygame.sprite import Group
 from bacterium import Bacterium
@@ -17,6 +18,8 @@ for i in range(settings.n_bacteria):
     statics.add(Bacterium(settings, screen, statics))
 u = Unguent(settings, screen)
 
+tsum=tnum=0
+t0 = time.perf_counter()
 while events.has_bacteria(statics):
     # take care of bidnis
     events.handle(settings, u)
@@ -35,7 +38,7 @@ while events.has_bacteria(statics):
     # detect inarows and execute erasure
     # movers are the broken pieces of unguents that need to fall down
     movers = events.clear(settings, statics)
-    settings.unguent_speed *= 10
+    settings.s_fall /= 5
     while len(movers):
         # inner loop makes user wait for pieces to fall
         for m in movers.copy():
@@ -49,7 +52,7 @@ while events.has_bacteria(statics):
             m.update(statics)
             m.render()
         pygame.display.flip()
-    settings.unguent_speed /= 10
+    settings.s_fall *= 5
 
     # redraw everything
     screen.fill(settings.bg_color)
@@ -57,8 +60,14 @@ while events.has_bacteria(statics):
         b.render()
     u.render()
     pygame.display.flip()
+    t1 = time.perf_counter()
+    dt = t1-t0
+    t0 = t1
+    tsum += dt
+    tnum += 1
 
-stophere=1
+avg = tsum / tnum
+print(tnum, "cycles, avg", avg, "sec")
 
 
 

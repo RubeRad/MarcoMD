@@ -21,8 +21,9 @@ class Settings:
                         (255,255,0)] # yellow
 
         s.unguent_blocks = 2
-        s.unguent_speed = 0.02
-        s.unguent_smooth = False
+
+        s.s_fall = 1    # second  per automatic row drop
+        s.s_move = 0.2  # seconds per keyed movement
 
         s.key_left = 'a'
         s.key_rght = 'd'

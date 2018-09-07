@@ -1,5 +1,6 @@
 #! /usr/bin/python3
 
+import time
 import pygame
 import sys
 from bacterium import Bacterium
@@ -17,8 +18,12 @@ def handle(se, u):
                  se.paused = not se.paused
             elif c in se.keyset:
                  u.move = c
+                 u.key_just_pressed = True
+                 u.time = time.perf_counter()
         elif e.type == pygame.KEYUP:
             u.move = '' # turn off key_down
+            u.key_just_pressed = False
+            u.time = time.perf_counter()
 
 
 def detect_inarows(settings, statics):
