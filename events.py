@@ -86,7 +86,7 @@ def detect_inarows(settings, statics):
     return None
 
 
-def clear(settings, statics):
+def erase_inarows(settings, statics):
     inarows = detect_inarows(settings, statics)
     if not inarows:
         return []

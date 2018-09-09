@@ -15,11 +15,11 @@ the game to the current state.
 The three most important parts of the code are probably:
 
 * unguent.update() which decides when/where to move a falling Unguent, based on
-  user keypresses
+  user keypresses or time elapsed
 
 * events.detect_inarows(): is there a 4-inarow that needs erasing?
 
-* events.clear(): erase any blocks inarow, break up any partially-erased
+* events.erase_inarows(): erase any blocks inarow, break up any partially-erased
   Unguents so they are free to fall
 
 Take a look at the Issues board for tasks I have in mind for future development.

@@ -37,9 +37,13 @@ class Unguent(Sprite):
 
         # start out moving down
         s.moving_down = True
-        #s.topy = s.rect.top
+        # no keypress right now
         s.move = ''
         s.key_just_pressed = False
+        # how long to wait for fall/move events
+        s.s_fall = s.se.s_fall
+        s.s_move = s.se.s_move
+        # start the clock(s)!
         s.time_move = time.perf_counter()
         s.time_fall = s.time_move
 
@@ -142,13 +146,14 @@ class Unguent(Sprite):
         if not s.moving_down: # shouldn't happen much
             return
 
+        # check the clock, has enough time elapsed to move?
         curt = time.perf_counter()
         dt_move = curt - s.time_move
         dt_fall = curt - s.time_fall
-        if not s.move and dt_fall < s.se.s_fall:
+        if not s.move and dt_fall < s.s_fall:
             # no user key, not time for automatic drop yet
             return
-        if s.move and not s.key_just_pressed and dt_move < s.se.s_move:
+        if s.move and not s.key_just_pressed and dt_move < s.s_move:
             # key held down, not time to move again yet
             return
 
@@ -200,10 +205,10 @@ class Unguent(Sprite):
         # Even if we did keypress movements above, it might be
         # time for a one-row drop as well
         like_its_hot=False
-        if dt_fall > s.se.s_fall:
+        if dt_fall > s.s_fall:
             like_its_hot = True
         if s.move == s.se.key_down:
-            if dt_move > s.se.s_move or s.key_just_pressed:
+            if dt_move > s.s_move or s.key_just_pressed:
                 like_its_hot = True
                 s.time_move = curt
         if like_its_hot: # drop it
