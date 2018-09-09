@@ -1,7 +1,7 @@
 # MarcoMD
 A video game in python
 
-Use the dropping Unguents to eliminate all the Bacteria. Use keys a,s,d for
+Use the dropping Unguents to eliminate all the Bacteria. Use keys a,d,s for
 left,right,drop and j,k for ccw/cw rotation. 4-in a row of the same color
 (vertical or horizontal) disappears.
 
