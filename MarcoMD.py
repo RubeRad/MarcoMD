@@ -20,23 +20,31 @@ def end_game(screen, msgs):
     time.sleep(3)
 
 def drop_fragments(screen, fragments, statics):
-    for f in fragments: # set falling speed faster so they get out of the way
+    if len(fragments)==0:
+        return # no fragments --> nothing to do
+
+    # set all timers to the same so they fall in sync
+    # set falling speed faster so they get out of the way quick
+    common_time = time.perf_counter()
+    for f in fragments:
         f.s_fall = f.s_move
+        f.time_fall = common_time
+        f.time_move = common_time
 
     # when we fall out of this while loop, all the fragments will be done falling
     while len(fragments):
         for f in fragments.copy():
-            if not f.moving_down:   # this fragment has reached its bottom
-                statics.add(f)      # now it's static
-                fragments.remove(f) # one less mover to keep updating
+            f.update(statics)     # immediately after updating
+            if not f.moving_down:   # if update made f static
+                statics.add(f)      # transfer f to statics
+                fragments.remove(f) # so next frag knows it's static
+
         # redraw everything
         screen.fill(settings.bg_color)
-        for b in statics.sprites():
-            b.render()
-        for f in fragments:
-            f.update(statics)
-            f.render()
+        for b in statics.sprites():  b.render()
+        for f in fragments:          f.render()
         pygame.display.flip()
+
 
 def update_times(t0, tsum, tnum):
     t1 = time.perf_counter()
