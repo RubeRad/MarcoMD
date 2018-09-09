@@ -1,5 +1,6 @@
 This file is for verifying that github/pycharm is set up correctly
 it can contain anything, it has nothing to do with the python project
+Don't mess with all these instructions, but add random stuff at the bottom
 
 setup process (this is complex but only has to be done once):
 
@@ -59,6 +60,36 @@ setup process (this is complex but only has to be done once):
      git commit -a    # if the changes look right, commit -a[ll] changed files
      git push         # send your commit to github.com
 * If that all worked (or seemed to), go to github.com and see your commit there!
+
+
+^^^^^^^^^^^^^ ALL OF THAT IS ONE TIME ONLY ^^^^^^^^^^^^^^^
+Once that all works, it gets a lot easier.
+
+===== HOW TO WORK AN ISSUE =====
+* Go to github.com/RubeRad/MarcoMD/issues
+* Click on the issue you want, note its #
+* Assignees: No one, click on 'assign yourself'
+* Click on MarcoMD or Code
+* Find the pulldown 'Branch: master' 
+  open it up, type a new branch name (no spaces) i.e. if it's 
+  Issue #12 Add Purple, make the new branch 12-add-purple
+
+* On your computer, open a git bash shell and do:
+    cd /c/Users/your.account/python/MarcoMD     # or wherever
+    git pull                    # to fetch the latest from github
+    git checkout 12-add-purple  # or whatever your new branch name is
+* Then get to work and resolve the Issue!
+* Whenever you have an incremental improvement that runs
+            (doesn't have to be the whole issue)
+    git status        # what files have changed
+    git diff          # what changed in the files
+    git commit -a     # if it all looks good, commit the changes
+    git push          # send to github if you want review
+* When you are totally done, go to github.com/RubeRad/MarcoMD/branches
+* Click on your branch
+* Click on Pull Request
+* Wait for me to review your changes and get back to you
+
 
 
 ================ ADD YOUR OWN LINE AFTER HERE ===================
