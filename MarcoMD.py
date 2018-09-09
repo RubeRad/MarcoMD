@@ -8,7 +8,11 @@ from unguent   import Unguent
 from settings  import Settings
 import events
 
-
+pygame.font.init()
+myfont = pygame.font.SysFont('Ubuntu', 20)
+textsurface_win1 = myfont.render('Congratulations!', False, (115, 115, 115))
+textsurface_win2 = myfont.render('You Won!', False, (115, 115, 115))
+textsurface_fail = myfont.render('Kablooey!', False, (115, 115, 115))
 
 settings = Settings()
 pygame.init()
@@ -32,12 +36,20 @@ while events.has_bacteria(statics):
         u = Unguent(settings, screen)
         # is the new unguent blocked from entering the screen?
         if pygame.sprite.spritecollide(u, statics, False):
-            print("Kablooey")
+            screen.blit(textsurface_fail, (0,0))
+            pygame.display.flip()
+            time.sleep(3)
             break; # game over
 
     # detect inarows and execute erasure
     # movers are the broken pieces of unguents that need to fall down
     movers = events.clear(settings, statics)
+    if events.has_bacteria(statics) == False:
+        screen.blit(textsurface_win1, (0, 0))
+        screen.blit(textsurface_win2, (0, 20))
+        pygame.display.flip()
+        time.sleep(3)
+        break
 
     # temporarily let extra pieces fall at same speed as accelerated keypresses
     save_speed = settings.s_fall
