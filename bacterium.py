@@ -7,25 +7,27 @@ class Bacterium(Sprite):
     def __init__(s, settings, screen, others):
         super().__init__()
         s.se = settings
-        s.sc = screen
-        s.rect = pygame.Rect(0, 0, settings.blocksize, settings.blocksize)
-        s.rect.centerx = screen.get_rect().centerx
-        s.rect.centery = screen.get_rect().centery
-        s.color = settings.random_color()
-        s.random_position(settings, others)
+        s.sc = screen # is this actually necessary?
+        s.rect = pygame.Rect(0, 0, s.se.blocksize, s.se.blocksize)
+        s.random_position(others) # this sets rect position
+        s.color = s.se.random_color()
 
-    def random_position(s, settings, others):
-        half = settings.spacing//2
+    def random_position(s, others):
+        # try random positions until we find one that doesn't collide
         while True:
-            row = random.randint(settings.rows-settings.blockrows, settings.rows-1)
-            col = random.randint(0, settings.cols-1)
-            s.rect.centerx = half + col * settings.spacing
-            s.rect.centery = half + row * settings.spacing
+            row = random.randint(s.se.rows-s.se.blockrows, s.se.rows-1)
+            col = random.randint(0, s.se.cols-1)
+            s.set_position(col, row)
             if pygame.sprite.spritecollide(s, others, False):
                 print("Bang!")
                 continue # collision! go try again
             # if we make it here, s does not collide with others
             break
+
+    def set_position(s, col, row):
+        half = s.se.spacing//2
+        s.rect.centerx = half + col * s.se.spacing
+        s.rect.centery = half + row * s.se.spacing
 
     def render(s):
         pygame.draw.circle(s.sc, s.color, s.rect.center, s.se.blocksize//2)

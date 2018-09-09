@@ -50,27 +50,34 @@ def detect_inarows(settings, statics):
     inarows = []
     for     r in range(settings.rows):
         for c in range(settings.cols):
-            color = colors[r][c]
-            if color == (0,0,0):
+            color = colors[r][c] # see if inarow from here is the same color
+            if color == settings.bg_color: # no color here
                 continue
-            down_same = True # so far
+
+            # how many inarow down from here?
             inarow = [ (r,c) ]
             for i in range(1,settings.inarow):
-                if r+i>=settings.rows or  colors[r+i][c] != color:
-                    down_same = False
-                    break
+                if r + i >= settings.rows:
+                    break  # ran off the board
+                thiscolor = colors[r+i][c]
+                if thiscolor != color:
+                    break # this color doesn't match
+                # if we get here then thiscolor does match color
                 inarow.append( (r+i,c) )
-            if down_same:
+            if len(inarow) >= settings.inarow: # we found enough!
                 inarows.append(inarow)
 
-            acrs_same = True
+            # how many inarow across right from here?
             inarow = [ (r,c) ]
             for i in range(1, settings.inarow):
-                if c+i>=settings.cols or colors[r][c+i] != color:
-                    acrs_same = False
-                    break
+                if c + i >= settings.cols:
+                    break  # ran off the board
+                thiscolor = colors[r][c+i]
+                if thiscolor != color:
+                    break # this color doesn't match
+                # if we get here then thiscolor does match color
                 inarow.append( (r,c+i) )
-            if acrs_same:
+            if len(inarow) >= settings.inarow: # we found enough!
                 inarows.append(inarow)
 
     if len(inarows):
@@ -132,3 +139,54 @@ def has_bacteria(statics):
         if isinstance(s, Bacterium):
             return True
     return False
+
+
+#######################
+##### UNIT TESTS ######
+#######################
+# if you run MarcoMD.py __name__=='events' and this is all skipped
+# but if you run events.py then __name__=='__main__' and these tests are run
+import unittest
+from   pygame.sprite import Group
+from settings import Settings
+
+if __name__ == '__main__':
+    class EventsTester(unittest.TestCase):
+        def testInarows(s):
+            se = Settings() # defaults: inarows=4
+            red = (255,0,0)
+
+            # set up 3 bacteria like this:       *
+            #                                   **
+            statics = Group()
+            b1=Bacterium(se, None, statics); b1.color=red; b1.set_position(3,7)
+            b2=Bacterium(se, None, statics); b2.color=red; b2.set_position(3,8)
+            b3=Bacterium(se, None, statics); b3.color=red; b3.set_position(2,8)
+            statics.add(b1)
+            statics.add(b2)
+            statics.add(b3)
+
+            # verify we can detect 4 vertical blocks inarow
+            u = Unguent(se,None,clist=(red,red))
+            u.set_rect(3,6,3) # right above and going up
+            statics.add(u)
+            rcs = detect_inarows(se, statics)
+            s.assertEqual(1, len(rcs))
+            should_be_four = rcs[0]
+            s.assertEqual(4, len(should_be_four))
+            s.assertTrue((5,3) in should_be_four)
+            s.assertTrue((8,3) in should_be_four)
+
+            u.set_rect(3,9,1) # right below and going down
+            rcs = detect_inarows(se, statics)
+            s.assertEqual(1, len(rcs))
+            should_be_four = rcs[0]
+            s.assertEqual(4, len(should_be_four))
+            s.assertTrue((7, 3) in should_be_four)
+            s.assertTrue((10,3) in should_be_four)
+
+
+
+    unittest.main()
+
+
