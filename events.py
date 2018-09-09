@@ -123,13 +123,23 @@ def erase_inarows(settings, statics):
     while (found_sumpn):
         found_sumpn = False
         for s in statics.copy():
-            statics.remove(s)
-            if isinstance(s,Unguent) and s.free_to_move(statics):
-                found_sump = True
+            if not isinstance(s, Unguent): # bacteria never fall
+                continue
+            # check if unguent has no statics in its way
+            statics.remove(s) # don't let it collide with itself
+            if s.free_to_move(statics):
+                found_sumpn = True
                 movers.append(s)
                 break
             else: # put it back
                 statics.add(s)
+
+    # issue #15: make sure these movers are sorted bottom-up
+    # (decreasing row number). Whenever one fragment a is right
+    # on top of fragment b, we need b to update before a so if it
+    # stops moving and gets transferred from movers to statics,
+    # then a can update and see it as a static and not move down into it
+    movers.sort(key=lambda m : -m.bottom_row())
 
     return movers
 

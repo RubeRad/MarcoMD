@@ -120,13 +120,20 @@ class Unguent(Sprite):
         else: # orientation 1, c0, r0 is top
             crs.append( (s.c0, s.r0 - s.nblocks + 1) )
 
+    def bottom_row(s):
+        if s.orientation == 1: # top down
+            return s.r0 + s.nblocks-1
+        # all others r0 is the correct answer
+        return s.r0
+
     def free_to_move(s, statics):
-        s.set_rect(s.c0, s.r0+1, s.orientation)
+        row = s.r0
+        s.set_rect(s.c0, row+1, s.orientation) # test the lower position
         if s.rect.bottom > s.se.screenh or pygame.sprite.spritecollideany(s, statics, False):
-            s.set_rect(s.c0, s.r0-1, s.orientation)
             s.moving_down = False
         else:
             s.moving_down = True
+        s.set_rect(s.c0, row, s.orientation) # restore the higher position
         return s.moving_down
 
     def render(s):
