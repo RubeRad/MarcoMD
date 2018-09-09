@@ -1,0 +1,88 @@
+Setup process (this is complex but only has to be done once):
+
+===== JOIN THE PROJECT ON GITHUB =====
+* login to github.com (reset your password if necessary)
+* accept the collaboration invitation I sent
+
+===== SETUP GIT =====
+* If necessary, download and install git for windows (free)
+* Start a git bash terminal and enter these commands:
+     git config --global user.name  <githubname>
+     git config --global user.email <emailaddress>
+         [Note these must match your github.com profile]
+     ssh-keygen 
+         [accept the defaults, note what directory it creates the keys]
+* Go find the ssh keys that were made by the ssh-keygen command
+  The *.pub file is the PUBLIC key (the other one is PRIVATE, keep it private)
+  Browse to github.com, log in, go to your settings, click on SSH and GPG keys
+  Open the *.pub file in notepad
+  Click on New SSH Key, paste in the contents of the *.pub file
+  Title is not that important, you could just put 'my laptop'
+  Click Add SSH Key
+  (Now your computer and github are securely linked)
+* In the git bash terminal enter:
+     cd /c/Users/your.account/python
+        # or whatever directory you keep your python in
+     git clone https://github.com/RubeRad/MarcoMD.git
+        # now there will be a new subdirectory MarcoMD
+     cd MarcoMD       # go into that directory
+     MarcoMD.py -h    # test run; if it doesn't work, pip install pygame
+     MarcoMD.py       # real run, play with keys a,s,d, j,k
+
+===== SETUP PYCHARM =====
+* If necessary, download and install PyCharm community edition (free)
+* Start PyCharm
+* New Project
+  For the Project Interpreter part, select "Existing Interpeter" 
+     and hopefully it recognizes the Python 3.x you have installed already
+     and you can choose it
+  For the Location, browse to the MarcoMD directory you cloned
+  Click CREATE
+  It will say "not empty; start a project with existing files?"
+  Say Yes.
+* Run/Run..., click MarcoMD, the game should run.
+  After that first time with Run/Run..., the green play button should run it
+  And the green bug icon should start debugging it
+  (and stop at any breakpoints, let you step through, inspect variables, etc)
+
+===== FIRST TEST COMMIT =====
+* Modify this file by saying something cool at the bottom
+* In git bash shell enter:
+     cd /c/Users/your.account/python/MarcoMD     # or wherever
+     git log          # see what recent commits have happened
+     git branch       # see what branch you're on
+     git status       # see what files have changed
+     git diff         # see what has changed in the files
+     git commit -a    # if the changes look right, commit -a[ll] changed files
+     git push         # send your commit to github.com
+* If that all worked (or seemed to), go to github.com and see your commit there!
+
+
+^^^^^^^^^^^^^ ALL OF THAT IS ONE TIME ONLY ^^^^^^^^^^^^^^^
+Once that all works, it gets a lot easier.
+
+===== HOW TO WORK AN ISSUE =====
+* Go to github.com/RubeRad/MarcoMD/issues
+* Click on the issue you want, note its #
+* Assignees: No one, click on 'assign yourself'
+* Click on MarcoMD or Code
+* Find the pulldown 'Branch: master' 
+  open it up, type a new branch name (no spaces) i.e. if it's 
+  Issue #12 Add Purple, make the new branch 12-add-purple
+
+* On your computer, open a git bash shell and do:
+    cd /c/Users/your.account/python/MarcoMD     # or wherever
+    git pull                    # to fetch the latest from github
+    git checkout 12-add-purple  # or whatever your new branch name is
+* Then get to work and resolve the Issue!
+* Whenever you have an incremental improvement that runs
+            (doesn't have to be the whole issue)
+    git status        # what files have changed
+    git diff          # what changed in the files
+    git commit -a     # if it all looks good, commit the changes
+    git push          # send to github if you want review
+* When you are totally done, go to github.com/RubeRad/MarcoMD/branches
+* Click on your branch
+* Click on Pull Request
+* Wait for me to review your changes and get back to you
+
