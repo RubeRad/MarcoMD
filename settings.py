@@ -48,7 +48,7 @@ class Settings:
                             help='Print game state for later reproducibility')
         args = parser.parse_args()
 
-        if args.seed == 0:
+        if args.seed == -1:
               s.seed = random.randint(1,1000000000) # still random but we know what it is
         else: s.seed = args.seed # specified by the user
         random.seed(s.seed)
