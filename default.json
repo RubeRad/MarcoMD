@@ -1,0 +1,39 @@
+{
+  "bg_color": [
+    0,
+    0,
+    0
+  ],
+  "cols": 8,
+  "rows": 15,
+  "blockrows": 8,
+  "blocksize": 16,
+  "blockborder": 2,
+  "n_bacteria": 4,
+  "colors": [
+    [
+      255,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      255
+    ],
+    [
+      255,
+      255,
+      0
+    ]
+  ],
+  "unguent_blocks": 2,
+  "speed": 1.0,
+  "key_left": "a",
+  "key_rght": "d",
+  "key_down": "s",
+  "key_cw": "k",
+  "key_ccw": "j",
+  "key_pause": "p",
+  "inarow": 4
+}
