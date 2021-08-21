@@ -129,7 +129,7 @@ class Unguent(Sprite):
     def free_to_move(s, statics):
         row = s.r0
         s.set_rect(s.c0, row+1, s.orientation) # test the lower position
-        if s.rect.bottom > s.se.screenh or pygame.sprite.spritecollideany(s, statics, False):
+        if s.rect.bottom > s.se.screenh or pygame.sprite.spritecollideany(s, statics):
             s.moving_down = False
         else:
             s.moving_down = True
@@ -179,7 +179,7 @@ class Unguent(Sprite):
             s.set_rect(s.c0, s.r0, onew)
 
             # if new orientation collides, undo it
-            if pygame.sprite.spritecollideany(s, bacteria, False):
+            if pygame.sprite.spritecollideany(s, bacteria):
                 s.set_rect(csav, rsav, osav)
                 s.move = ''
             else: # check if rotation goes off screen right or left, bump it
@@ -188,7 +188,7 @@ class Unguent(Sprite):
                 if s.rect.right > s.se.screenw:
                     s.set_rect(s.c0-1, s.r0, s.orientation)
             # check again (the bump might have caused a collision)
-            if pygame.sprite.spritecollideany(s, bacteria, False):
+            if pygame.sprite.spritecollideany(s, bacteria):
                 s.set_rect(csave, rsav, osav)
                 s.move = ''
 
